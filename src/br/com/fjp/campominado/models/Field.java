@@ -62,4 +62,32 @@ public class Field {
 
         return this.neighbors.add(field);
     }
+
+    void switchMarkup() {
+        if(this.isOpen) {
+            this.isMarked = !this.isMarked;
+        }
+    }
+
+    boolean open() {
+        if(isOpen || isMarked) {
+            return false;
+        }
+
+        if(hasMine) {
+            throw new RuntimeException("Fim de jogo paezão");
+        }
+
+        isOpen = true;
+        
+        if(neighborhoodIsSafe()) {
+            neighbors.forEach(neighbor -> neighbor.open());
+        }
+
+        return true;
+    }
+
+    boolean neighborhoodIsSafe() {
+        return neighbors.stream().noneMatch(neighbor -> neighbor.hasMine);
+    }
 }
