@@ -3,6 +3,9 @@ package br.com.fjp.campominado.models;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+
+import br.com.fjp.campominado.exceptions.ExplosionException;
+
 import org.junit.jupiter.api.BeforeEach;
 
 public class FieldTest {
@@ -59,5 +62,76 @@ public class FieldTest {
         boolean result = field.addNeighbor(neighbor);
 
         assertFalse( result);
+    }
+
+    @Test
+    void TestDefaultValueMarkup() {
+        assertFalse(field.isMarked());
+    }
+
+    @Test
+    void TestSwitchValueMarkup() {
+        field.switchMarkup();
+        assertTrue(field.isMarked());
+    }
+
+    @Test
+    void TestSwitchValueMarkupTwice() {
+        field.switchMarkup();
+        field.switchMarkup();
+        assertFalse(field.isMarked());
+    }
+
+    @Test
+    void TestOpenFieldUnmarkedNoMined() {
+        assertTrue(field.open());
+    }
+
+    @Test
+    void TestOpenFieldMarkedNoMined() {
+        field.switchMarkup();
+        assertFalse(field.open());
+    }
+
+    @Test
+    void TestOpenFieldUnmarkedMined() {
+        field.setMine();
+        assertThrows(ExplosionException.class, 
+            () -> field.open()
+        );
+    }
+
+    @Test
+    void TestOpenFieldMarkedMined() {
+        field.switchMarkup();
+        field.setMine();
+        assertFalse(field.open());
+    }
+
+    @Test
+    void TestOpenNeighborsNoMined() {
+        Field neighbor11 = new Field(1, 1);
+        Field neighbor22 = new Field(2, 2);
+
+        neighbor22.addNeighbor(neighbor11);
+        field.addNeighbor(neighbor22);
+
+        field.open();
+
+        assertTrue(neighbor11.isOpen() && neighbor22.isOpen());
+    }
+
+    @Test
+    void TestOpenNeighborsMined() {
+        Field neighbor11 = new Field(1, 1);
+        Field neighbor22 = new Field(2, 2);
+
+        neighbor11.setMine();
+        neighbor22.addNeighbor(neighbor11);
+        field.addNeighbor(neighbor22);
+
+        field.open();
+
+        assertTrue(!neighbor11.isOpen() && neighbor22.isOpen());
     }
 }
