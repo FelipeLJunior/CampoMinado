@@ -64,10 +64,10 @@ public class Board {
         int totalFields = fields.size();
 
         while(armedMines < minesQuantity) {
-            armedMines = fields.stream().filter(hasMine).count();
             int randomIndex = (int) (Math.random() * totalFields);
-
             fields.get(randomIndex).setMine();
+            
+            armedMines = fields.stream().filter(hasMine).count();
         }
     }
 
@@ -76,7 +76,7 @@ public class Board {
     }
 
     public void reset() {
-        fields.stream().forEach(f -> f.reset()); // Testar sem o "stream()"
+        fields.forEach(f -> f.reset());
         shuffleMines();
     }
 
