@@ -75,7 +75,7 @@ public class Field {
             return false;
         }
 
-        if(mine) {
+        if(hasMine()) {
             throw new ExplosionException();
         }
 
@@ -97,8 +97,8 @@ public class Field {
     }
 
     boolean isGoalAchieved() {
-        boolean discovered = !mine && isOpen();
-        boolean protectedFromMine = mine && isMarked();
+        boolean discovered = !hasMine() && isOpen();
+        boolean protectedFromMine = hasMine() && isMarked();
 
         return discovered || protectedFromMine;
     }
