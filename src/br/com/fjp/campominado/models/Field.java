@@ -45,36 +45,19 @@ public class Field {
         int neighborColumn = field.getColumn();
 
         int lineDistance = Math.abs(neighborLine - this.getLine());
-        int columnsDistance = Math.abs(neighborColumn - this.getColumn());
+        int columnDistance = Math.abs(neighborColumn - this.getColumn());
 
-        int totalLines = 100; // Linhas totais do tabuleiro
-        int totalColumns = 100; // Colunas totais do tabuleiro
-
-        if(lineDistance == 0 && columnsDistance == 0) {
-            return false;// throw new RuntimeException("Campo com a mesma coordenada!");
+        if(lineDistance == 0 && columnDistance == 0) {
+            return false;
         }
 
-        if(this.getLine() == 0 && neighborLine < 0) {
-            return false;// throw new RuntimeException("Campo em uma linha menor que permitida");
+        if(columnDistance > 1 || lineDistance > 1) {
+            return false;
         }
+
+        this.neighbors.add(field);
         
-        if(this.getLine() == totalLines && neighborLine > totalLines) {
-            return false;// throw new RuntimeException("Campo em uma linha menor que permitida");
-        }
-
-        if(this.getColumn() == 0 && neighborColumn < 0) {
-            return false;// throw new RuntimeException("Campo em uma linha menor que permitida");
-        }
-
-        if(this.getColumn() == totalColumns && neighborColumn > totalColumns) {
-            return false;// throw new RuntimeException("Campo em uma linha menor que permitida");
-        }
-
-        if(columnsDistance > 1 || lineDistance > 1) {
-            return false;// throw new RuntimeException("Campo muito distante!");
-        }
-
-        return this.neighbors.add(field);
+        return true;
     }
 
     void switchMarkup() {
@@ -88,7 +71,7 @@ public class Field {
     }
 
     boolean open() {
-        if(open || markup) {
+        if(isOpen() || isMarked()) {
             return false;
         }
 
@@ -105,11 +88,15 @@ public class Field {
         return true;
     }
 
-    boolean neighborhoodIsSafe() {
-        return neighbors.stream().noneMatch(neighbor -> neighbor.mine);
+    void open(boolean open) {
+        this.open = open;
     }
 
-    boolean goalAchieved() {
+    boolean neighborhoodIsSafe() {
+        return neighbors.stream().noneMatch(neighbor -> neighbor.hasMine());
+    }
+
+    boolean isGoalAchieved() {
         boolean discovered = !mine && isOpen();
         boolean protectedFromMine = mine && isMarked();
 
@@ -139,7 +126,11 @@ public class Field {
         if(isOpen() && neighborsMines() > 0L) {
             return Long.toString(neighborsMines());
         }
+
+        if(isOpen()) {
+            return " ";
+        }
         
-        return " ";
+        return "?";
     }
 }
